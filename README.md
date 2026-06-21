@@ -2,13 +2,21 @@
 
 A production-ready Python automation script designed to extract, compress, and securely upload PostgreSQL database backups to S3-compatible object storage (MinIO), while providing real-time infrastructure monitoring alerts through a Discord webhook interface.
 
-## 🚀 Features
+## 📖 Detailed Overview & Business Value
 
-- **Automated Export:** Leverages `pg_dump` to generate native compressed custom-format database backups (`.dump`).
-- **S3-Compatible Sync:** Seamlessly streams backup binaries directly into a target **MinIO Object Store** bucket using `boto3`.
-- **Infrastructure Monitoring:** Dispatches real-time success or critical failure notification payloads via **Discord Webhooks** to a designated DevOps alert channel.
-- **Security First:** Implements zero-hardcoding principles. All sensitive credentials, tokens, and system variables are decoupled and isolated using a `.env` configuration file.
-- **Storage Optimization:** Guarantees absolute local disk space clearance by enforcing automated temporary file purging post-upload via a resilient `finally` execution sequence.
+In production environments, database backups are critical, but managing them manually introduces human error, security risks, and potential data loss. This repository features a fully automated, production-ready DevOps utility written in Python that orchestrates a secure, end-to-end database lifecycle backup strategy.
+
+The solution addresses three core challenges in modern infrastructure management:
+
+* **Secure Data Extraction:** Instead of risking raw SQL exposures, it leverages native PostgreSQL utilities (`pg_dump`) to generate highly compressed, custom-format binaries (`.dump`). This minimizes bandwidth usage and prevents database performance degradation during the backup window.
+* **Decoupled & Compliant Storage:** By utilizing the S3 API via `boto3` to communicate with MinIO, the script mirrors cloud-native best practices. It ensures that infrastructure backups are isolated from the application host, adhering to standard disaster recovery guidelines.
+* **Proactive Infrastructure Monitoring:** Automated processes shouldn't be a "black box". The integration of real-time monitoring through Discord Webhooks ensures that system administrators and DevOps teams receive immediate feedback—whether a lifecycle event completes successfully or requires immediate troubleshooting due to network anomalies.
+
+### 🧠 Engineering Best Practices Implemented
+
+* **Strict Security Isolation:** Decouples environment configurations from the core logic by using `.env` variable matrices. Credentials never touch the source control visibility layer.
+* **Resilient Exception Handling:** Built with defensive programming principles. The script intercepts standard I/O failures, network timeouts, and authentication errors, formatting them into clear telemetry payloads.
+* **Zero-Disk-Leak Lifecycle:** Enforces a rigid execution block that guarantees the purge of temporary binary outputs immediately after the network transfer stage, shielding the host machine from storage depletion.
 
 ## 🛠️ System Architecture Workflow
 
@@ -50,7 +58,7 @@ cd postgres-backup-automation
 ### 2. Install Dependencies
 Initialize and pull the required library ecosystems using `pip`:
 ```bash
-pip install boto3 requests python-dotenv urllib3
+pip install -r requirements.txt
 ```
 
 ### 3. Environment Secrets Provisioning
@@ -58,14 +66,14 @@ Create a hidden `.env` file within the project workspace root folder:
 ```bash
 touch .env
 ```
-Open the `.env` file and map your sensitive configuration strings explicitly without quotation tokens:
+Open the `.env` file and map your sensitive configuration strings explicitly without quotation tokens (reference the `.env.example` file for structure):
 ```env
 DB_PASSWORD=your_secure_postgres_password_here
 DISCORD_WEBHOOK_URL=[https://discord.com/api/webhooks/your_actual_token_here](https://discord.com/api/webhooks/your_actual_token_here)
 ```
 
 ### 4. Script Parameter Audit
-Review the target configuration headers inside the script block to verify they match your ongoing local cluster metrics:
+Review the target configuration headers inside the `src/backup.py` script block to verify they match your ongoing local cluster metrics:
 ```python
 DB_NAME = "my_portfolio_db"
 DB_USER = "postgres"
@@ -79,9 +87,9 @@ MINIO_ENDPOINT = "http://localhost:9000"
 
 ## 💻 Usage & Execution
 
-To manually trigger the backup workflow pipeline, execute:
+To manually trigger the backup workflow pipeline, execute the script located inside the source folder:
 ```bash
-python backup.py
+python src/backup.py
 ```
 
 ### Expected Terminal Output Logs
@@ -99,7 +107,7 @@ Key visual confirmations of successful execution pipeline:
 
 | Local MinIO Bucket Storage | Discord DevOps Alerts |
 | --- | --- |
-| ![MinIO Storage](img/screenshot_minio.png) | ![Discord Alert](img/screenshot_discord.png) |
+| ![MinIO Storage](img/captura_minio.png) | ![Discord Alert](img/captura_discord.png) |
 
 ## 📂 Repository Tree Structure
 
@@ -108,10 +116,12 @@ postgres-backup-automation/
 ├── img/
 │   ├── captura_minio.png      # Screenshot of the cloud storage bucket
 │   └── captura_discord.png    # Screenshot of the Discord notification receipt
-├── .env                       # Local credentials and secret webhook tokens (Ignored by Git)
+├── src/
+│   └── backup.py              # Core automated script logic
+├── .env.example               # Template for environment configuration variables
 ├── .gitignore                 # Explicit rule mappings to prevent secret leaks
-├── backup.py                  # Core automated script logic
-└── README.md                  # Technical project documentation manual
+├── README.md                  # Technical project documentation manual
+└── requirements.txt           # File containing required Python dependencies
 ```
 
 ## 🛡️ Security Auditing Policy
