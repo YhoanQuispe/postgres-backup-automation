@@ -1,4 +1,5 @@
 # PostgreSQL Backup Automation to MinIO with Discord Alerts
+[![Code Quality Check](https://github.com/YhoanQuispe/postgres-backup-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/YhoanQuispe/postgres-backup-automation/actions)
 
 A production-ready Python automation script designed to extract, compress, and securely upload PostgreSQL database backups to S3-compatible object storage (MinIO), while providing real-time infrastructure monitoring alerts through a Discord webhook interface.
 
