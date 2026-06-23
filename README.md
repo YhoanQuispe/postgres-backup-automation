@@ -27,6 +27,10 @@ The solution addresses three core challenges in modern infrastructure management
 4. **DevOps Notification:** Compiles and posts structured telemetry data directly to the Discord API endpoint.
 5. **Disk Purge:** Enforces a hard cleanup routine to completely erase local binary storage remnants.
 
+### 🔄 Animated Workflow
+![System Architecture Flow](img/postgres-backup-automation.gif)
+
+### 📊 Interactive Components Diagram
 ```mermaid
 graph TD
     A[PostgreSQL Database] -->|1. pg_dump| B(Python Backup Script)
